@@ -4,8 +4,10 @@ set -e
 POLYFILE=$1
 SCHEMAFILE=/schema.lua
 STATEFILE=/sequence.state
+SLEEP_TIME=60
 
 latest_osm_obj_db_ts=''
+server_state_id=''
 
 log() {
   echo "$(date +'%Y-%m-%d %H:%M:%S') $1"
@@ -22,18 +24,20 @@ fetch_latest_osm_object_timestamp_from_db() {
         (SELECT created FROM planet_osm_rels ORDER BY id DESC LIMIT 1)
     );
   ")
-  log "Latest OSM object timestamp from db: ${latest_osm_obj_db_ts}"
 }
 
-print_replication_state_id() {
-  log "Current replication state id: $(cat $STATEFILE)"
+refresh_server_state_id() {
+  server_state_id="$(curl -s -L -X GET 'https://planet.osm.org/replication/minute/state.txt' | sed -n 's/^sequenceNumber=//p')";
 }
 
-# Init replication
+# Initialize replication
 fetch_latest_osm_object_timestamp_from_db
+log "Latest OSM object timestamp from db: ${latest_osm_obj_db_ts}"
 pyosmium-get-changes -D $latest_osm_obj_db_ts -f $STATEFILE -v
 
-# Run replication
+# Start replication loop
+refresh_server_state_id
+reached_remote_state_id=false
 while true; do
     rm -f /tmp/changes.osc.gz /tmp/planet_changes.osc.gz
 
@@ -48,10 +52,32 @@ while true; do
         osmium extract --polygon=$POLYFILE /tmp/planet_changes.osc.gz -o /tmp/changes.osc.gz
         log "Diff extracted. Appending data to the db."
         osm2pgsql --slim --append --extra-attributes --output=flex --style=$SCHEMAFILE -d $POSTGRES_DB -U $POSTGRES_USER -H $POSTGRES_HOST -P $POSTGRES_PORT /tmp/changes.osc.gz
-        fetch_latest_osm_object_timestamp_from_db
-        print_replication_state_id
+
+        local_state_id="$(cat $STATEFILE)"
+        log "Current local state id: ${local_state_id}"
+
+        # During initialization, we skip 'sleep' to synchronize with the replication server as fast as possible.
+        # Once we catch up to the remote state, we compare the local state with the remote state again.
+        # If they are equal or nearly equal, we start sleeping between iterations to avoid sending unnecessary requests.
+        if [ "$reached_remote_state_id" = true ]; then
+          sleep $SLEEP_TIME
+          continue
+        fi
+
+        if (( "${server_state_id}" - "${local_state_id}" < 2 )); then
+          # Refresh again to double check the remote state.
+          # This handles very old dumps that may takes days to fully synchronize.
+          refresh_server_state_id
+
+          if (( "${server_state_id}" - "${local_state_id}" < 2 )); then
+            log "Reached server state head ${server_state_id}. Sleeping after each apply from now on."
+            reached_remote_state_id=true
+            sleep $SLEEP_TIME
+            continue
+          fi
+        fi
     elif [ $status -eq 3 ]; then
-        sleep 60
+        sleep $SLEEP_TIME
     else
         log "Fatal error, stopping updates."
         exit $status
