@@ -6,7 +6,7 @@ tables.nodes = osm2pgsql.define_node_table('nodes', {
     { column = 'changeset', type = 'bigint' },
     { column = 'uid', type = 'bigint' },
     { column = 'username', type = 'text' },
-    { column = 'tags', type = 'hstore' },
+    { column = 'tags', type = 'jsonb' },
     { column = 'geom', type = 'point', projection = 4326 }
 }, { indexes = {
         { column = 'tags', method = 'gin' },
@@ -20,7 +20,7 @@ tables.ways = osm2pgsql.define_way_table('ways', {
     { column = 'changeset', type = 'bigint' },
     { column = 'uid', type = 'bigint' },
     { column = 'username', type = 'text' },
-    { column = 'tags', type = 'hstore' },
+    { column = 'tags', type = 'jsonb' },
     { column = 'geom', type = 'linestring', projection = 4326 },
 }, { indexes = {
         { column = 'tags', method = 'gin' },
@@ -34,7 +34,7 @@ tables.relations = osm2pgsql.define_relation_table('relations', {
     { column = 'changeset', type = 'bigint' },
     { column = 'uid', type = 'bigint' },
     { column = 'username', type = 'text' },
-    { column = 'tags', type = 'hstore' },
+    { column = 'tags', type = 'jsonb' },
     { column = 'members', type = 'jsonb' },
     { column = 'geom', type = 'multipolygon', projection = 4326 },
 }, { indexes = {
