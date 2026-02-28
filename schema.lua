@@ -8,6 +8,10 @@ tables.nodes = osm2pgsql.define_node_table('nodes', {
     { column = 'username', type = 'text' },
     { column = 'tags', type = 'hstore' },
     { column = 'geom', type = 'point', projection = 4326 }
+}, { indexes = {
+        { column = 'tags', method = 'gin' },
+        { column = 'geom', method = 'gist' },
+    }
 })
 
 tables.ways = osm2pgsql.define_way_table('ways', {
@@ -17,7 +21,11 @@ tables.ways = osm2pgsql.define_way_table('ways', {
     { column = 'uid', type = 'bigint' },
     { column = 'username', type = 'text' },
     { column = 'tags', type = 'hstore' },
-    { column = 'geom', type = 'linestring', projection = 4326 }
+    { column = 'geom', type = 'linestring', projection = 4326 },
+}, { indexes = {
+        { column = 'tags', method = 'gin' },
+        { column = 'geom', method = 'gist' },
+    }
 })
 
 tables.relations = osm2pgsql.define_relation_table('relations', {
@@ -28,7 +36,11 @@ tables.relations = osm2pgsql.define_relation_table('relations', {
     { column = 'username', type = 'text' },
     { column = 'tags', type = 'hstore' },
     { column = 'members', type = 'jsonb' },
-    { column = 'geom', type = 'multipolygon', projection = 4326 }
+    { column = 'geom', type = 'multipolygon', projection = 4326 },
+}, { indexes = {
+        { column = 'tags', method = 'gin' },
+        { column = 'geom', method = 'gist' },
+    }
 })
 
 function osm2pgsql.process_node(object)
