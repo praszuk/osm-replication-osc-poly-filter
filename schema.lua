@@ -27,7 +27,8 @@ tables.relations = osm2pgsql.define_relation_table('relations', {
     { column = 'uid', type = 'bigint' },
     { column = 'username', type = 'text' },
     { column = 'tags', type = 'hstore' },
-    { column = 'members', type = 'jsonb' }
+    { column = 'members', type = 'jsonb' },
+    { column = 'geom', type = 'multipolygon', projection = 4326 }
 })
 
 function osm2pgsql.process_node(object)
@@ -64,6 +65,7 @@ function osm2pgsql.process_relation(object)
         uid = object.uid,
         username = object.user,
         tags = object.tags,
-        members = object.members
+        members = object.members,
+        geom = object:as_multipolygon()
     })
 end
