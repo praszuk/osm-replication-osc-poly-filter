@@ -116,3 +116,10 @@ SELECT way_id, tags->'name' AS name FROM ways WHERE tags @> '{"highway": "reside
 SELECT * FROM nodes WHERE tags ? 'created_by' ORDER BY node_id DESC LIMIT 3;
 ```
 Note: Columns tags and members use jsonb type. You can find more in [postgres docs](https://www.postgresql.org/docs/current/functions-json.html#FUNCTIONS-JSON-PROCESSING).
+
+## Read only user
+If you want to create read-only database user (for example, to share access across multiple apps), run:
+```bash
+docker compose exec -it db bash -c "psql -d \$POSTGRES_DB -U \$POSTGRES_USER -p \$POSTGRES_PORT -c \"CREATE ROLE osm_ro WITH LOGIN PASSWORD 'osm_ro'; GRANT CONNECT ON DATABASE \$POSTGRES_DB TO osm_ro; GRANT USAGE ON SCHEMA public TO osm_ro; GRANT SELECT ON ALL TABLES IN SCHEMA public TO osm_ro; ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO osm_ro;\""
+```
+Login / Pass: `osm_ro`
