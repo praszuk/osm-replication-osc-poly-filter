@@ -44,7 +44,9 @@ while true; do
     # https://docs.osmcode.org/pyosmium/latest/user_manual/10-Replication-Tools/
     # Uses planet.osm.org minutely as default server
     set +e
-    pyosmium-get-changes -f $STATEFILE -o /tmp/planet_changes.osc.gz -v
+
+    cp $STATEFILE ${STATEFILE}.tmp
+    pyosmium-get-changes -f ${STATEFILE}.tmp -o /tmp/planet_changes.osc.gz -v
     status=$?
     set -e
     if [ $status -eq 0 ]; then
@@ -52,6 +54,7 @@ while true; do
         osmium extract --polygon=$POLYFILE /tmp/planet_changes.osc.gz -o /tmp/changes.osc.gz
         log "Diff extracted. Appending data to the db."
         osm2pgsql --slim --append --extra-attributes --output=flex --style=$SCHEMAFILE -d $POSTGRES_DB -U $POSTGRES_USER -H $POSTGRES_HOST -P $POSTGRES_PORT /tmp/changes.osc.gz
+        mv -u $STATEFILE.tmp $STATEFILE
 
         local_state_id="$(cat $STATEFILE)"
         log "Current local state id: ${local_state_id}"
