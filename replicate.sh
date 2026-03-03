@@ -3,7 +3,7 @@ set -e
 
 POLYFILE=$1
 SCHEMAFILE=/schema.lua
-STATEFILE=/sequence.state
+STATEFILE=/data/sequence.state
 SLEEP_TIME=60
 
 latest_osm_obj_db_ts=''
