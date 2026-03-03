@@ -32,8 +32,8 @@ refresh_server_state_id() {
 
 # Initialize replication
 fetch_latest_osm_object_timestamp_from_db
-log "Latest OSM object timestamp from db: ${latest_osm_obj_db_ts}"
 pyosmium-get-changes -D $latest_osm_obj_db_ts -f $STATEFILE -v
+log "Latest OSM object timestamp from db: ${latest_osm_obj_db_ts}. Starting with state id: $(cat $STATEFILE)"
 
 # Start replication loop
 refresh_server_state_id
@@ -46,6 +46,8 @@ while true; do
     set +e
 
     cp $STATEFILE ${STATEFILE}.tmp
+
+    log "Downloading changes from state id: $(cat $STATEFILE)"
     pyosmium-get-changes -f ${STATEFILE}.tmp -o /tmp/planet_changes.osc.gz -v
     status=$?
     set -e
@@ -54,10 +56,11 @@ while true; do
         osmium extract --polygon=$POLYFILE /tmp/planet_changes.osc.gz -o /tmp/changes.osc.gz
         log "Diff extracted. Appending data to the db."
         osm2pgsql --slim --append --extra-attributes --output=flex --style=$SCHEMAFILE -d $POSTGRES_DB -U $POSTGRES_USER -H $POSTGRES_HOST -P $POSTGRES_PORT /tmp/changes.osc.gz
-        mv -u $STATEFILE.tmp $STATEFILE
 
-        local_state_id="$(cat $STATEFILE)"
-        log "Current local state id: ${local_state_id}"
+        old_state_id=$(cat $STATEFILE)
+        new_state_id="$(cat $STATEFILE.tmp)"
+        mv -u $STATEFILE.tmp $STATEFILE
+        log "Diff applied. Updated state id: ${old_state_id} -> ${new_state_id}"
 
         # During initialization, we skip 'sleep' to synchronize with the replication server as fast as possible.
         # Once we catch up to the remote state, we compare the local state with the remote state again.
@@ -67,12 +70,12 @@ while true; do
           continue
         fi
 
-        if (( "${server_state_id}" - "${local_state_id}" < 2 )); then
+        if (( "${server_state_id}" - "${new_state_id}" < 2 )); then
           # Refresh again to double check the remote state.
           # This handles very old dumps that may takes days to fully synchronize.
           refresh_server_state_id
 
-          if (( "${server_state_id}" - "${local_state_id}" < 2 )); then
+          if (( "${server_state_id}" - "${new_state_id}" < 2 )); then
             log "Reached server state head ${server_state_id}. Sleeping after each apply from now on."
             reached_remote_state_id=true
             sleep $SLEEP_TIME
