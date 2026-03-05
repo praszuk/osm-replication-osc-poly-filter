@@ -2,7 +2,7 @@ local tables = {}
 
 tables.nodes = osm2pgsql.define_node_table('nodes', {
     { column = 'version', type = 'int' },
-    { column = 'timestamp', type = 'text' },
+    { column = 'timestamp', sql_type = 'timestamptz' },
     { column = 'changeset', type = 'bigint' },
     { column = 'uid', type = 'bigint' },
     { column = 'username', type = 'text' },
@@ -16,7 +16,7 @@ tables.nodes = osm2pgsql.define_node_table('nodes', {
 
 tables.ways = osm2pgsql.define_way_table('ways', {
     { column = 'version', type = 'int' },
-    { column = 'timestamp', type = 'text' },
+    { column = 'timestamp', sql_type = 'timestamptz' },
     { column = 'changeset', type = 'bigint' },
     { column = 'uid', type = 'bigint' },
     { column = 'username', type = 'text' },
@@ -30,7 +30,7 @@ tables.ways = osm2pgsql.define_way_table('ways', {
 
 tables.relations = osm2pgsql.define_relation_table('relations', {
     { column = 'version', type = 'int' },
-    { column = 'timestamp', type = 'text' },
+    { column = 'timestamp', sql_type = 'timestamptz' },
     { column = 'changeset', type = 'bigint' },
     { column = 'uid', type = 'bigint' },
     { column = 'username', type = 'text' },
@@ -43,10 +43,14 @@ tables.relations = osm2pgsql.define_relation_table('relations', {
     }
 })
 
+local function format_dt(ts)
+    return os.date('!%Y-%m-%dT%H:%M:%SZ', ts)
+end
+
 function osm2pgsql.process_node(object)
     tables.nodes:insert({
         version = object.version,
-        timestamp = object.timestamp,
+        timestamp = format_dt(object.timestamp),
         changeset = object.changeset,
         uid = object.uid,
         username = object.user,
@@ -59,7 +63,7 @@ end
 function osm2pgsql.process_way(object)
     tables.ways:insert({
         version = object.version,
-        timestamp = object.timestamp,
+        timestamp = format_dt(object.timestamp),
         changeset = object.changeset,
         uid = object.uid,
         username = object.user,
@@ -72,7 +76,7 @@ end
 function osm2pgsql.process_relation(object)
     tables.relations:insert({
         version = object.version,
-        timestamp = object.timestamp,
+        timestamp = format_dt(object.timestamp),
         changeset = object.changeset,
         uid = object.uid,
         username = object.user,
