@@ -11,6 +11,7 @@ tables.nodes = osm2pgsql.define_node_table('nodes', {
 }, { indexes = {
         { column = 'tags', method = 'gin' },
         { column = 'geom', method = 'gist' },
+        { column = 'timestamp', method = 'btree' },
     }
 })
 
@@ -25,6 +26,7 @@ tables.ways = osm2pgsql.define_way_table('ways', {
 }, { indexes = {
         { column = 'tags', method = 'gin' },
         { column = 'geom', method = 'gist' },
+        { column = 'timestamp', method = 'btree' },
     }
 })
 
@@ -40,6 +42,7 @@ tables.relations = osm2pgsql.define_relation_table('relations', {
 }, { indexes = {
         { column = 'tags', method = 'gin' },
         { column = 'geom', method = 'gist' },
+        { column = 'timestamp', method = 'btree' },
     }
 })
 
