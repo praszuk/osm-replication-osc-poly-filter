@@ -3,3 +3,7 @@
 !.gitkeep
 *.pbf
 *.poly
+*.osc
+*.osc.gz
+*.state
+*.state.tmp
