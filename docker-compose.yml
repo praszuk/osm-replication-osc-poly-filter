@@ -3,7 +3,7 @@ services:
     restart: always
     image: "postgis/postgis:18-3.6"
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
     ports:
     - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     environment:
@@ -19,7 +19,7 @@ services:
     build:
       dockerfile: Dockerfile
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
     environment:
       PGPASSWORD: "${POSTGRES_PASSWORD}"
     volumes:
