@@ -1,14 +1,17 @@
 name: test
 
+x-env: &default-env
+  POSTGRES_USER: "osm_user"
+  POSTGRES_HOST: "db"
+  POSTGRES_PORT: "5432"
+  POSTGRES_PASSWORD: "test_db_pass"
+  POSTGRES_DB: "osm"
+
 services:
   db:
     image: "postgis/postgis:18-3.6"
     environment:
-      POSTGRES_USER: "osm_user"
-      POSTGRES_HOST: "db"
-      POSTGRES_PORT: "5432"
-      POSTGRES_PASSWORD: "test_db_pass"
-      POSTGRES_DB: "osm"
+      <<: *default-env
     volumes:
       - ./postgis/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
   test:
@@ -16,6 +19,8 @@ services:
       dockerfile: Dockerfile
       args:
         TESTS: "true"
+    environment:
+      <<: *default-env
     volumes:
       - ./data:/data
       - ./tests:/tests
