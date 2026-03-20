@@ -1,0 +1,21 @@
+name: test
+
+services:
+  db:
+    image: "postgis/postgis:18-3.6"
+    environment:
+      POSTGRES_USER: "osm_user"
+      POSTGRES_HOST: "db"
+      POSTGRES_PORT: "5432"
+      POSTGRES_PASSWORD: "test_db_pass"
+      POSTGRES_DB: "osm"
+    volumes:
+      - ./postgis/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  test:
+    build:
+      dockerfile: Dockerfile
+      args:
+        TESTS: "true"
+    volumes:
+      - ./data:/data
+      - ./tests:/tests
