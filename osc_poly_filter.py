@@ -1,16 +1,23 @@
 import argparse
+import numpy as np
 
-from shapely import unary_union, Point
+from shapely import unary_union, points as shapely_points, covers, Geometry
 from shapely.geometry import Polygon, MultiPolygon
-from shapely.prepared import prep, PreparedGeometry
 
 
 class PolyGeomHandler:
     def __init__(self):
-        self.prepared_poly: PreparedGeometry | None = None
+        self.geom: Geometry | None = None
 
-    def is_in_poly(self, lat: float, lon: float) -> bool:
-        return self.prepared_poly.covers(Point(lon, lat))
+    def in_poly(self, coordinates: list[tuple[float, float]]) -> np.typing.NDArray[np.bool_]:
+        """
+        :param coordinates: lat lon
+        :return: list of bools where index corresponds to input list coordinates
+        """
+        xs = np.fromiter((lon for lat, lon in coordinates), dtype=float)
+        ys = np.fromiter((lat for lat, lon in coordinates), dtype=float)
+        mask = covers(self.geom, shapely_points(xs, ys))
+        return mask
 
     def load_poly(self, filename: str) -> None:
         polygons = []
@@ -44,7 +51,7 @@ class PolyGeomHandler:
                 # coordinates
                 if len(parts) == 2:
                     lon, lat = map(float, parts)
-                    ring.append((lon, lat))
+                    ring.append((lon, lat))  # noqa
                     continue
 
                 # name of section
@@ -58,7 +65,7 @@ class PolyGeomHandler:
         if geom.geom_type == 'Polygon':
             geom = MultiPolygon([geom])  # noqa
 
-        self.prepared_poly = prep(geom)
+        self.geom = geom
 
 
 poly_geom_handler = PolyGeomHandler()
