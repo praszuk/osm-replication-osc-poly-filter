@@ -65,3 +65,27 @@ def run_osm2pgsql(db_name: str, filename: str, append: bool = False) -> None:
         check=True,
         env=environ | {'PGPASSWORD': environ['POSTGRES_PASSWORD']},
     )
+
+
+def run_osc_poly_filter(
+    db_name: str, poly_filename: str, input_filename: str, output_filename: str
+) -> None:
+    subprocess.run(
+        [
+            'python',
+            'osc_poly_filter.py',
+            '--db-name',
+            db_name,
+            '--db-user',
+            environ['POSTGRES_USER'],
+            '--db-host',
+            environ['POSTGRES_HOST'],
+            '--db-port',
+            environ['POSTGRES_PORT'],
+            '--poly',
+            poly_filename,
+            input_filename,
+            output_filename,
+        ],
+        check=True,
+    )
