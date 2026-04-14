@@ -20,5 +20,3 @@ pytest==9.0.2
     # via -r requirements/requirements-test.in
 tomli==2.4.1
     # via pytest
-typing-extensions==4.15.0
-    # via exceptiongroup
