@@ -21,6 +21,7 @@ services:
         TESTS: "true"
     environment:
       <<: *default-env
+      PYTHONDONTWRITEBYTECODE: 1
     volumes:
       - ./data:/data
       - ./tests:/tests
