@@ -17,6 +17,8 @@ services:
   import:
     build:
       dockerfile: Dockerfile
+      args:
+        TESTS: "false"
     environment:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_HOST: "${POSTGRES_HOST}"
