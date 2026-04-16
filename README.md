@@ -41,16 +41,8 @@ The example is based on the Poland dump (February 2026), but I recommend trying 
     
     **Edit the last argument to match your downloaded filename!** 
    ```bash
-    docker compose run --rm import bash -c 'osm2pgsql --slim --create --extra-attributes --output=flex --style=/schema.lua -d $POSTGRES_DB -U $POSTGRES_USER -H $POSTGRES_HOST -P $POSTGRES_PORT /data/poland-xxxx.osm.pbf'
+    docker compose run --rm import bash -c './scripts/create.sh /data/poland-xxxx.osm.pbf'
     ```
-   Explanation of options:
-    - `--create` – create a new database from the provided dump
-    - `--slim` – required for replication (increases database size and duplicates data)
-    - `--extra-attributes` – includes metadata (userid, changesetid)
-    - `--output=flex --style=/schema.lua` – provides custom database schema (tables/columns)
-    - `-d.. -U.. -H.. -P..` – database connection parameters
-    - `/data/poland-xxxx.osm.pbf` – path to the dump file (**must be adjusted**)
-   
    For more details, see the [osm2pgsql manual](https://osm2pgsql.org/doc/manual.html).
 
 ## Replication
