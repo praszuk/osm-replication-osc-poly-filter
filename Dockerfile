@@ -10,4 +10,5 @@ RUN if [ "$TESTS" = "true" ]; then \
     else \
       pip install -r requirements.txt; \
     fi
-COPY replicate.sh schema.lua osc_poly_filter.py /
+COPY schema.lua osc_poly_filter.py /
+COPY scripts/ /scripts/

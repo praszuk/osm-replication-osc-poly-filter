@@ -58,7 +58,7 @@ This runs until stopped or until the first critical error.
 
 Replace `poland.poly` with the downloaded `.poly` filename.
 ```bash
- docker compose run --rm -it import bash -c './replicate.sh /data/poland.poly'
+ docker compose run --rm -it import bash -c './scripts/replicate.sh /data/poland.poly'
  ```
 
 ## Schema
