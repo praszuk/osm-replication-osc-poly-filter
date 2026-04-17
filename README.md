@@ -9,17 +9,17 @@ The target DB state:
 - No history (no attic data)
 - Minutely replication using `planet.osm.org`
 
-# Requirements
+## Requirements
 
 You will need:
 - Docker + docker compose
 - An OSM account – to download the dump with metadata
 - Enough storage for the selected region – the database size will be [much larger](https://osm2pgsql.org/doc/manual.html#sizing) than the downloaded .pbf file.
 
-# How to use
+## How to use
 The example is based on the Poland dump (February 2026), but I recommend trying this first with a smaller region before importing the entire country.
 
-## Load pbf dump
+### Load pbf dump
 1. Download the project files
 2. Download the latest region dump with metadata
    - Go to: https://download.geofabrik.de/europe/poland.html
@@ -45,7 +45,7 @@ The example is based on the Poland dump (February 2026), but I recommend trying 
     ```
    For more details, see the [osm2pgsql manual](https://osm2pgsql.org/doc/manual.html).
 
-## Replication
+### Replication
 This runs until stopped or until the first critical error.
 
 Replace `poland.poly` with the downloaded `.poly` filename.
@@ -53,7 +53,7 @@ Replace `poland.poly` with the downloaded `.poly` filename.
  docker compose run --rm -it import bash -c './scripts/replicate.sh /data/poland.poly'
  ```
 
-## Schema
+### Schema
 If you want to change the schema and create your own tables, you can find examples in the [osm2pgsql repo](https://github.com/osm2pgsql-dev/osm2pgsql/blob/master/flex-config/README.md).
 
 To modify the schema edit file `schema.lua`.
@@ -68,7 +68,7 @@ docker compose down --volumes
 ```
 and repeat section **Load pbf dump**.
 
-## Explore
+### Explore
 The database is running on localhost with the default port 5432. You can connect with your client/app or join via docker exec.
  ```bash
  docker compose exec -it db bash -c 'psql -d $POSTGRES_DB -U $POSTGRES_USER -p $POSTGRES_PORT'
@@ -109,12 +109,12 @@ SELECT * FROM nodes WHERE tags ? 'created_by' ORDER BY node_id DESC LIMIT 3;
 ```
 Note: Columns tags and members use jsonb type. You can find more in [postgres docs](https://www.postgresql.org/docs/current/functions-json.html#FUNCTIONS-JSON-PROCESSING).
 
-## Read only user
+### Read only user
 If you want to create read-only database user (for example, to share access across multiple apps), run:
 ```bash
 docker compose exec -it db bash -c "psql -d \$POSTGRES_DB -U \$POSTGRES_USER -p \$POSTGRES_PORT -c \"CREATE ROLE osm_ro WITH LOGIN PASSWORD 'osm_ro'; GRANT CONNECT ON DATABASE \$POSTGRES_DB TO osm_ro; GRANT USAGE ON SCHEMA public TO osm_ro; GRANT SELECT ON ALL TABLES IN SCHEMA public TO osm_ro; ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO osm_ro;\""
 ```
 Login / Pass: `osm_ro`
 
-# License
+## License
 [MIT](LICENSE)
