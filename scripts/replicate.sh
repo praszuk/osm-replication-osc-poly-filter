@@ -63,6 +63,9 @@ while true; do
         mv -u $STATEFILE.tmp $STATEFILE
         log "Diff applied. Updated state id: ${old_state_id} -> ${new_state_id}"
 
+        fetch_latest_osm_object_timestamp_from_db
+        log "Current latest object timestamp from db: ${latest_osm_obj_db_ts}"
+
         # During initialization, we skip 'sleep' to synchronize with the replication server as fast as possible.
         # Once we catch up to the remote state, we compare the local state with the remote state again.
         # If they are equal or nearly equal, we start sleeping between iterations to avoid sending unnecessary requests.
