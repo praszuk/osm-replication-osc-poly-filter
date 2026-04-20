@@ -2,6 +2,7 @@
 !.gitignore
 !.gitkeep
 !.pre-commit-config.yaml
+!.github
 *.pbf
 *.poly
 *.osc
