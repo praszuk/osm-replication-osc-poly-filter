@@ -51,7 +51,7 @@ def run_osm2pgsql(db_name: str, filename: str, append: bool = False) -> None:
             f'--{"append" if append else "create"}',
             '--extra-attributes',
             '--output=flex',
-            '--style=/schema.lua',
+            '--style=/schemas/schema.lua',
             '-d',
             db_name,
             '-U',

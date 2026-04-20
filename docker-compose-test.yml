@@ -24,4 +24,5 @@ services:
       PYTHONDONTWRITEBYTECODE: 1
     volumes:
       - ./data:/data
+      - ./schemas:/schemas
       - ./tests:/tests

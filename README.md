@@ -56,11 +56,7 @@ Replace `poland.poly` with the downloaded `.poly` filename.
 ### Schema
 If you want to change the schema and create your own tables, you can find examples in the [osm2pgsql repo](https://github.com/osm2pgsql-dev/osm2pgsql/blob/master/flex-config/README.md).
 
-To modify the schema edit file `schema.lua`.
-Then rebuild the container:
-```bash
-docker compose build
-```
+To modify the schema edit file `schemas/schema.lua`.
 
 If you want to **remove all db data** to recreate it with the new schema, use:
 ```bash

@@ -28,6 +28,7 @@ services:
       PGPASSWORD: "${POSTGRES_PASSWORD}"
     volumes:
       - ./data:/data
+      - ./schemas:/schemas
 
 volumes:
   db_data:
