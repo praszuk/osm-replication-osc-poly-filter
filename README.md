@@ -21,7 +21,7 @@ The example is based on the Poland dump (February 2026), but I recommend trying 
 
 ### Load pbf dump
 1. Download project example files:
-   - Clone [example project](https://github.com/praszuk/osm-db) – it's using already built [dockerhub image](https://hub.docker.com/r/praszuk/osm-replication-osc-poly-filter) (faster)
+   - Clone [example project](https://github.com/praszuk/example-osm-replication-osc-poly-filter) – it's using already built [dockerhub image](https://hub.docker.com/r/praszuk/osm-replication-osc-poly-filter) (faster)
    - or clone this one – build will take up to few minutes
 2. Prepare osm pbf file or download ready extract e.g. the latest Geofabrik region dump with metadata
    - Go to: https://download.geofabrik.de/europe/poland.html
