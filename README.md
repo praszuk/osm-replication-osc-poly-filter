@@ -20,8 +20,10 @@ You will need:
 The example is based on the Poland dump (February 2026), but I recommend trying this first with a smaller region before importing the entire country.
 
 ### Load pbf dump
-1. Download the project files
-2. Download the latest region dump with metadata
+1. Download project example files:
+   - Clone [example project](https://github.com/praszuk/osm-db) – it's using already built [dockerhub image](https://hub.docker.com/r/praszuk/osm-replication-osc-poly-filter) (faster)
+   - or clone this one – build will take up to few minutes
+2. Prepare osm pbf file or download ready extract e.g. the latest Geofabrik region dump with metadata
    - Go to: https://download.geofabrik.de/europe/poland.html
    - Click on _Extracts with full metadata_
    - Log in via OSM account
