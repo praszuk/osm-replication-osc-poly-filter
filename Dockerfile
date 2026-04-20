@@ -35,10 +35,11 @@ FROM python:3.13-slim-trixie
 ARG TESTS
 
 COPY --from=osm2pgsql_builder /out/usr/local/bin/osm2pgsql /usr/local/bin/osm2pgsql
-# Install curl and other deps are for osm2pgsql (pyosmium inside requirements.txt)
+# Install curl, postgresql-client and other deps are for osm2pgsql (pyosmium inside requirements.txt)
 # To get versions you can use RUN ldd /usr/local/bin/osm2pgsql
 RUN apt-get update && apt-get install -y  \
     curl \
+    postgresql-client \
     libexpat1 \
     zlib1g \
     libbz2-1.0 \
