@@ -1,4 +1,4 @@
-# Docker OSM Replication OSC Poly Filter
+# OSM Replication OSC Poly Filter
 
 This project simplifies creating and updating a PostGIS database for OSM data using [osm2pgsql](https://osm2pgsql.org/).
 
