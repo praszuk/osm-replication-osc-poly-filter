@@ -39,13 +39,13 @@ The example is based on the Poland dump (February 2026), but I recommend trying 
    This will build containers and create an empty PostGIS database.
 4. Init the osm2pgsql schema and load the dump
     
-    Loading the Poland .pbf took about 1.5 hours on my machine. The DB size is 46 GB (from a 2.3 GB .pbf file).
+   Loading the Poland .pbf took about 1.5 hours on my machine and about 4 hours in a Proxmox container with 4 GB of memory and 1 CPUs. 
+   The DB size is 46 GB (from a 2.3 GB .pbf file), but during the import, the db grew over 70 GB in the post-processing/indexing step.
     
     **Edit the last argument to match your downloaded filename!** 
    ```bash
     docker compose run --rm import bash -c './scripts/create.sh /data/poland-xxxx.osm.pbf'
     ```
-   For more details, see the [osm2pgsql manual](https://osm2pgsql.org/doc/manual.html).
 
 ### Replication
 This runs until stopped or until the first critical error.
