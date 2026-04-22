@@ -23,4 +23,4 @@ jobs:
           until docker compose -f docker-compose-test.yml exec db bash -c "pg_isready -U \$POSTGRES_USER"; do
             sleep 1;
           done
-          docker compose -f docker-compose-test.yml run test bash -c "PYTHONPATH=. pytest -s -p no:cacheprovider tests"
+          docker compose -f docker-compose-test.yml run test bash -c "PYTHONPATH=/src pytest -s -p no:cacheprovider tests"

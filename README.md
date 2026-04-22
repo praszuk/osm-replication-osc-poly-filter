@@ -44,8 +44,8 @@ The example is based on the Poland dump (February 2026), but I recommend trying 
     
     **Edit the last argument to match your downloaded filename!** 
    ```bash
-    docker compose run --rm import bash -c './scripts/create.sh /data/poland-xxxx.osm.pbf'
-    ```
+   docker compose run --rm import create /data/poland-xxxx.osm.pbf
+   ```
 
 ### Replication
 In general, this project tries to perform replication by checking if every object is in the polygon (poly), but
@@ -68,8 +68,8 @@ Initially, it won't sleep between iterations to allow faster sync. After catchin
 
 Replace `poland.poly` with the downloaded `.poly` filename.
 ```bash
- docker compose run --rm -it import bash -c './scripts/replicate.sh /data/poland.poly'
- ```
+docker compose run --rm -it import replicate /data/poland.poly
+```
 
 ### Schema
 If you want to change the schema and create your own tables, you can find examples in the [osm2pgsql repo](https://github.com/osm2pgsql-dev/osm2pgsql/blob/master/flex-config/README.md).
@@ -84,20 +84,20 @@ and repeat section **Load pbf dump**.
 
 ### Explore
 The database is running on localhost with the default port 5432. You can connect with your client/app or join via docker exec.
- ```bash
- docker compose exec -it db bash -c 'psql -d $POSTGRES_DB -U $POSTGRES_USER -p $POSTGRES_PORT'
- ```
+```bash
+docker compose exec -it db bash -c 'psql -d $POSTGRES_DB -U $POSTGRES_USER -p $POSTGRES_PORT'
+```
 
 **Meta cheatsheet:**
- ```sql
- -- show databases with sizes
- \l+
+```sql
+-- show databases with sizes
+\l+
 
- -- list all tables (add + to show size) 
- \d 
+-- list all tables (add + to show size) 
+\d 
  
- -- show columns/schema for table
- \d table_name
+-- show columns/schema for table
+\d table_name
 ```
 
 **Tag queries cheatsheet:**

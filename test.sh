@@ -13,7 +13,7 @@ if [ "$#" -eq 0 ]; then
 else
   pytest_args="$*"
 fi
-docker compose -f docker-compose-test.yml run --rm -it test bash -c "PYTHONPATH=. pytest -s -p no:cacheprovider ${pytest_args}"
+docker compose -f docker-compose-test.yml run --rm -it test bash -c "PYTHONPATH=/src pytest -s -p no:cacheprovider ${pytest_args}"
 test_status_code=$?
 
 docker compose -f docker-compose-test.yml down --volumes
