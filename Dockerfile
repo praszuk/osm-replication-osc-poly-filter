@@ -58,6 +58,6 @@ RUN if [ "$TESTS" = "true" ]; then \
       pip install -r requirements.txt; \
     fi
 
-COPY scripts/ /scripts/
+COPY src/ /src/
 
-RUN ln -s /scripts/create.sh /usr/local/bin/create && ln -s /scripts/replicate.sh /usr/local/bin/replicate
+RUN ln -s /src/create.sh /usr/local/bin/create && ln -s /src/replicate.sh /usr/local/bin/replicate
