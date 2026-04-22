@@ -48,7 +48,23 @@ The example is based on the Poland dump (February 2026), but I recommend trying 
     ```
 
 ### Replication
-This runs until stopped or until the first critical error.
+In general, this project tries to perform replication by checking if every object is in the polygon (poly), but
+to keep it efficient and due to limitations of the osc diff structure, there may still be unwanted objects imported to the db.
+For example:
+- If a node is outside the poly, then moved inside, and then moved outside again, it will still be appended to the db.
+- A way object might be appended even if it was never in the poly – this is possible because the program checks if any node of the way is in the poly or if the way already exists in the db. \
+In one .osc file, we can have multiple versions of the same way due to different actions (created/modified/deleted), so they can contain different nodes. 
+The problem is that .osc files don't contain specific node versions, only ids `<nd ref="5"/>`, so the program checks all nodes of the way in the osc/db, 
+and if any node matches (even if it's no longer a member of the way), then the way will be appended.
+
+These cases usually occur near borders or due to anomalies/vandalism. If it's important, you can always recreate the db from a dump periodically.
+
+To understand how the filter works with different cases, you can check the [integration osc filter tests](tests/test_osc_poly_filter_integration.py).
+
+---
+
+To perform replication, run the command below. It will run endlessly.
+Initially, it won't sleep between iterations to allow faster sync. After catching up the latest state, it will sleep between each iteration.
 
 Replace `poland.poly` with the downloaded `.poly` filename.
 ```bash
