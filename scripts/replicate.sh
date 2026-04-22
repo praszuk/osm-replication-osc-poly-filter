@@ -54,7 +54,7 @@ while true; do
     set -e
     if [ $status -eq 0 ]; then
         log "Diff downloaded. Extracting .osc.gz using .poly file."
-        python osc_poly_filter.py --db-name $POSTGRES_DB --db-user $POSTGRES_USER --db-host $POSTGRES_HOST --db-port $POSTGRES_PORT --poly $POLYFILE /tmp/planet_changes.osc.gz /tmp/changes.osc.gz
+        python /scripts/osc_poly_filter.py --db-name $POSTGRES_DB --db-user $POSTGRES_USER --db-host $POSTGRES_HOST --db-port $POSTGRES_PORT --poly $POLYFILE /tmp/planet_changes.osc.gz /tmp/changes.osc.gz
         log "Diff extracted. Appending data to the db."
         osm2pgsql --append "${COMMON_OSM2PGSQL_ARGS[@]}" -d $POSTGRES_DB -U $POSTGRES_USER -H $POSTGRES_HOST -P $POSTGRES_PORT /tmp/changes.osc.gz
 

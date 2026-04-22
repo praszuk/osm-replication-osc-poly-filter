@@ -57,7 +57,7 @@ RUN if [ "$TESTS" = "true" ]; then \
     else \
       pip install -r requirements.txt; \
     fi
-COPY osc_poly_filter.py /
+
 COPY scripts/ /scripts/
 
 RUN ln -s /scripts/create.sh /usr/local/bin/create && ln -s /scripts/replicate.sh /usr/local/bin/replicate
