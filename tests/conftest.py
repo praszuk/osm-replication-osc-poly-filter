@@ -73,7 +73,7 @@ def run_osc_poly_filter(
     subprocess.run(
         [
             'python',
-            'osc_poly_filter.py',
+            '/src/osc_poly_filter.py',
             '--db-name',
             db_name,
             '--db-user',
