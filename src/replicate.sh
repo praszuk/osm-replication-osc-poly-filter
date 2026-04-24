@@ -4,6 +4,8 @@ set -e
 POLYFILE=$1
 STATEFILE=/data/sequence.state
 SLEEP_TIME=60
+SERVER_URL=${REPLICATION_SERVER_URL:-https://planet.osm.org/replication/minute}
+SERVER_URL=${SERVER_URL%/}
 
 latest_osm_obj_db_ts=''
 server_state_id=''
@@ -26,14 +28,14 @@ fetch_latest_osm_object_timestamp_from_db() {
 }
 
 refresh_server_state_id() {
-  server_state_id="$(curl -s -L -X GET 'https://planet.osm.org/replication/minute/state.txt' | sed -n 's/^sequenceNumber=//p')";
+  server_state_id=$(curl -s -L -X GET "${SERVER_URL}/state.txt" | sed -n 's/^sequenceNumber=//p');
 }
 
 source /src/osm2pgsql-common-args.sh
 # Initialize replication
 
 fetch_latest_osm_object_timestamp_from_db
-pyosmium-get-changes -D $latest_osm_obj_db_ts -f $STATEFILE -v
+pyosmium-get-changes --server "${SERVER_URL}" -D $latest_osm_obj_db_ts -f $STATEFILE -v
 log "Latest OSM object timestamp from db: ${latest_osm_obj_db_ts}. Starting with state id: $(cat $STATEFILE)"
 
 # Start replication loop
@@ -49,7 +51,7 @@ while true; do
     cp $STATEFILE ${STATEFILE}.tmp
 
     log "Downloading changes from state id: $(cat $STATEFILE)"
-    pyosmium-get-changes -f ${STATEFILE}.tmp -o /tmp/planet_changes.osc.gz -v
+    pyosmium-get-changes --server "${SERVER_URL}" -f ${STATEFILE}.tmp -o /tmp/planet_changes.osc.gz -v
     status=$?
     set -e
     if [ $status -eq 0 ]; then
