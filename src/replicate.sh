@@ -3,7 +3,7 @@ set -e
 
 POLYFILE=$1
 STATEFILE=/data/sequence.state
-SLEEP_TIME=60
+FETCH_INTERVAL_SECONDS=${REPLICATION_FETCH_INTERVAL_SECONDS:-60}
 SERVER_URL=${REPLICATION_SERVER_URL:-https://planet.osm.org/replication/minute}
 SERVER_URL=${SERVER_URL%/}
 
@@ -72,7 +72,7 @@ while true; do
         # Once we catch up to the remote state, we compare the local state with the remote state again.
         # If they are equal or nearly equal, we start sleeping between iterations to avoid sending unnecessary requests.
         if [ "$reached_remote_state_id" = true ]; then
-          sleep $SLEEP_TIME
+          sleep "$FETCH_INTERVAL_SECONDS"
           continue
         fi
 
@@ -84,12 +84,12 @@ while true; do
           if (( "${server_state_id}" - "${new_state_id}" < 2 )); then
             log "Reached server state head ${server_state_id}. Sleeping after each apply from now on."
             reached_remote_state_id=true
-            sleep $SLEEP_TIME
+            sleep "$FETCH_INTERVAL_SECONDS"
             continue
           fi
         fi
     elif [ $status -eq 3 ]; then
-        sleep $SLEEP_TIME
+        sleep "$FETCH_INTERVAL_SECONDS"
     else
         log "Fatal error, stopping updates."
         exit $status
