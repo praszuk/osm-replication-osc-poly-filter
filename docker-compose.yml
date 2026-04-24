@@ -4,11 +4,8 @@ services:
     image: "postgis/postgis:18-3.6"
     ports:
     - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-    environment:
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_PORT: "${POSTGRES_PORT}"
-      POSTGRES_DB: "${POSTGRES_DB}"
+    env_file:
+      - .env
     command: -p ${POSTGRES_PORT}
     volumes:
       - db_data:/var/lib/postgresql
@@ -19,12 +16,9 @@ services:
       dockerfile: Dockerfile
       args:
         TESTS: "false"
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_HOST: "${POSTGRES_HOST}"
-      POSTGRES_PORT: "${POSTGRES_PORT}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_DB: "${POSTGRES_DB}"
       PGPASSWORD: "${POSTGRES_PASSWORD}"
     volumes:
       - ./data:/data
