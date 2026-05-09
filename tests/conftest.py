@@ -43,15 +43,24 @@ def db_conn() -> Generator[psycopg.Connection, None, None]:
             cursor.execute(f'DROP DATABASE "{test_db_name}"')
 
 
-def run_osm2pgsql(db_name: str, filename: str, append: bool = False) -> None:
+def run_osm2pgsql(
+    db_name: str, filename: str, append: bool = False, extra_attributes: bool = False
+) -> None:
+    cmd = ['osm2pgsql']
+    optional_params = [
+        '--slim',
+        f'--{"append" if append else "create"}',
+        '--output=flex',
+        '--style=/schemas/schema.lua',
+    ]
+    if extra_attributes:
+        optional_params.append('--extra-attributes')
+        environ['OSM2PGSQL_USE_METADATA'] = 'true'
+
     subprocess.run(
-        [
-            'osm2pgsql',
-            '--slim',
-            f'--{"append" if append else "create"}',
-            '--extra-attributes',
-            '--output=flex',
-            '--style=/schemas/schema.lua',
+        cmd
+        + optional_params
+        + [
             '-d',
             db_name,
             '-U',

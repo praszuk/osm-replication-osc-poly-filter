@@ -7,23 +7,16 @@ FETCH_INTERVAL_SECONDS=${REPLICATION_FETCH_INTERVAL_SECONDS:-60}
 SERVER_URL=${REPLICATION_SERVER_URL:-https://planet.osm.org/replication/minute}
 SERVER_URL=${SERVER_URL%/}
 
-latest_osm_obj_db_ts=''
+current_osm2pgsql_db_timestamp=''
 server_state_id=''
 
 log() {
   echo "$(date +'%Y-%m-%d %H:%M:%S') $1"
 }
 
-fetch_latest_osm_object_timestamp_from_db() {
-  latest_osm_obj_db_ts=$(psql -A -t -d $POSTGRES_DB -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT -c "
-    SELECT to_char(max(created)::timestamp at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"')
-    FROM (
-        (SELECT created FROM planet_osm_nodes ORDER BY id DESC LIMIT 1)
-        UNION
-        (SELECT created FROM planet_osm_ways ORDER BY id DESC LIMIT 1)
-        UNION
-        (SELECT created FROM planet_osm_rels ORDER BY id DESC LIMIT 1)
-    );
+fetch_current_osm2pgsql_db_timestamp() {
+  current_osm2pgsql_db_timestamp=$(psql -A -t -d $POSTGRES_DB -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT -c "
+    SELECT value FROM osm2pgsql_properties WHERE property = 'current_timestamp';
   ")
 }
 
@@ -34,9 +27,9 @@ refresh_server_state_id() {
 source /src/osm2pgsql-common-args.sh
 # Initialize replication
 
-fetch_latest_osm_object_timestamp_from_db
-pyosmium-get-changes --server "${SERVER_URL}" -D $latest_osm_obj_db_ts -f $STATEFILE -v
-log "Latest OSM object timestamp from db: ${latest_osm_obj_db_ts}. Starting with state id: $(cat $STATEFILE)"
+fetch_current_osm2pgsql_db_timestamp
+pyosmium-get-changes --server "${SERVER_URL}" -D "$current_osm2pgsql_db_timestamp" -f $STATEFILE -v
+log "Latest OSM object timestamp from db: ${current_osm2pgsql_db_timestamp}. Starting with state id: $(cat $STATEFILE)"
 
 # Start replication loop
 refresh_server_state_id
@@ -65,8 +58,8 @@ while true; do
         mv -u $STATEFILE.tmp $STATEFILE
         log "Diff applied. Updated state id: ${old_state_id} -> ${new_state_id}"
 
-        fetch_latest_osm_object_timestamp_from_db
-        log "Current latest object timestamp from db: ${latest_osm_obj_db_ts}"
+        fetch_current_osm2pgsql_db_timestamp
+        log "Current latest object timestamp from db: ${current_osm2pgsql_db_timestamp}"
 
         # During initialization, we skip 'sleep' to synchronize with the replication server as fast as possible.
         # Once we catch up to the remote state, we compare the local state with the remote state again.
